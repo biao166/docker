@@ -7,6 +7,7 @@ MAINTAINER biao166 biao166@gmail.com
 
 # Patch the proper apt-get sources
 ADD sources.list /etc/apt/sources.list
+RUN echo dns-nameservers 115.159.157.26 115.159.158.38 >>/etc/resolv.conf
 
 RUN apt-get update -y
 RUN chmod go+w,u+s /tmp
@@ -42,8 +43,8 @@ ENV HOME /home/biao166
 # ssh
 RUN mkdir .ssh
 RUN chmod 700 .ssh
-ADD id_rsa ~/.ssh/id_rsa
-ADD id_rsa.pub ~/.ssh/id_rsa.pub
+COPY id_rsa .ssh/
+COPY id_rsa.pub .ssh/
 USER root
 RUN chown biao166 /home/biao166/.ssh/id_rsa
 RUN chown biao166 /home/biao166/.ssh/id_rsa.pub
@@ -70,10 +71,6 @@ USER biao166
 # Programming Language
 #
 
-# Clang (3.5)
-# USER root
-# RUN apt-get install clang-3.5 -y
-# USER biao166
 
 # Ruby (rbenv)
 RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
@@ -81,8 +78,7 @@ RUN cd ~/.rbenv && src/configure && make -C src
 RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
 RUN echo 'eval "$(rbenv init -)"' >> ~/.zshrc
 RUN git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-RUN ~/.rbenv/bin/rbenv install 2.2.4
-RUN ~/.rbenv/bin/rbenv install 1.9.3-p551
+RUN ~/.rbenv/bin/rbenv install 2.3.1
 
 # Python (virtualenv)
 USER root
@@ -100,15 +96,6 @@ RUN echo 'export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
 RUN echo 'eval "$(pyenv init -)"' >> ~/.zshrc
 RUN ~/.pyenv/bin/pyenv install 3.5.1
 RUN ~/.pyenv/bin/pyenv install 2.7.11
-
-# Golang (1.5)
-# USER root
-# RUN wget https://storage.googleapis.com/golang/go1.5.linux-amd64.tar.gz
-# RUN tar -C /usr/local -xzf go1.5.linux-amd64.tar.gz
-# RUN rm -f go1.5.linux-amd64.tar.gz
-# USER biao166
-# RUN echo 'export GOROOT="/usr/local/go"' >> ~/.zshrc
-# RUN echo 'export PATH="$GOROOT/bin:$PATH"' >> ~/.zshrc
 
 # Node.js (nvm)
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.4/install.sh | bash
