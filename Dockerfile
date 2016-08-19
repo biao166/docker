@@ -51,10 +51,9 @@ RUN chown biao166 /home/biao166/.ssh/id_rsa.pub
 USER biao166
 
 # dotfiles
-RUN git clone https://github.com/biao166/dotfiles.git ~/dotfiles \
+RUN git clone https://github.com/skwp/dotfiles.git ~/dotfiles \
     && cd ~/dotfiles \
-    && git checkout os/ubuntu-docker \
-    && bash bootstrap.sh
+    && bash install.sh
 
 #
 # Database
@@ -99,7 +98,7 @@ RUN ~/.pyenv/bin/pyenv install 2.7.11
 
 # Node.js (nvm)
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.4/install.sh | bash
-ENV NODE_VERSION 4.4.7
+ENV NODE_VERSION stable
 ENV NVM_DIR $HOME/.nvm
 RUN . ~/.nvm/nvm.sh && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION && npm install -g gulp node-gyp browserify
 
