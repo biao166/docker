@@ -13,8 +13,8 @@ RUN apt-get update -y
 RUN chmod go+w,u+s /tmp
 
 # package
-RUN apt-get install openssh-server zsh tmux build-essential -y
-RUN apt-get install wget unzip curl tree grep bison libssl-dev openssl zlib1g-dev -y # "libssl-dev openssl zlib1g-dev" need to rbenv and pyenv
+RUN apt-get install openssh-server tmux build-essential -y
+RUN apt-get install zsh wget unzip curl tree grep bison libssl-dev openssl zlib1g-dev ruby-full -y # "libssl-dev openssl zlib1g-dev" need to rbenv and pyenv
 
 #vim
 RUN apt-get install git mercurial gettext libncurses5-dev  libperl-dev python-dev python3-dev ruby-dev lua5.2 liblua5.2-dev luajit libluajit-5.1 -y
@@ -50,10 +50,12 @@ RUN chown biao166 /home/biao166/.ssh/id_rsa
 RUN chown biao166 /home/biao166/.ssh/id_rsa.pub
 USER biao166
 
-# dotfiles
-RUN git clone https://github.com/skwp/dotfiles.git ~/dotfiles \
-    && cd ~/dotfiles \
-    && bash install.sh
+# oh-my-zsh
+RUN git clone git://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh \
+      && cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc
+
+# vim config
+RUN  curl https://j.mp/spf13-vim3 -oL | sh
 
 #
 # Database
@@ -69,15 +71,6 @@ USER biao166
 #
 # Programming Language
 #
-
-
-# Ruby (rbenv)
-RUN git clone https://github.com/rbenv/rbenv.git ~/.rbenv
-RUN cd ~/.rbenv && src/configure && make -C src
-RUN echo 'export PATH="$HOME/.rbenv/bin:$PATH"' >> ~/.zshrc
-RUN echo 'eval "$(rbenv init -)"' >> ~/.zshrc
-RUN git clone https://github.com/rbenv/ruby-build.git ~/.rbenv/plugins/ruby-build
-RUN ~/.rbenv/bin/rbenv install 2.3.1
 
 # Python (virtualenv)
 USER root
@@ -98,7 +91,7 @@ RUN ~/.pyenv/bin/pyenv install 2.7.11
 
 # Node.js (nvm)
 RUN curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.31.4/install.sh | bash
-ENV NODE_VERSION stable
+ENV NODE_VERSION 4.5.0
 ENV NVM_DIR $HOME/.nvm
 RUN . ~/.nvm/nvm.sh && nvm install $NODE_VERSION && nvm alias default $NODE_VERSION && npm install -g gulp node-gyp browserify
 
